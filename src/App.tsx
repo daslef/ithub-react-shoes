@@ -53,45 +53,46 @@ function App() {
       });
   }, []);
 
-  // useEffect(() => {
-  //   setLoading(true);
+  useEffect(() => {
+    if (selectedUserId === null) {
+      return
+    }
 
-  //   fetch(baseUrl + "/posts")
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         throw new Error("Error with status" + response.statusText);
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       setPosts(data);
-  //     })
-  //     .catch((error) => {
-  //       setFetchError(error);
-  //     })
-  //     .finally(() => {
-  //       setLoading(false);
-  //     });
-  // }, []);
+    setLoading(true);
+
+    fetch(baseUrl + "/posts")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error with status" + response.statusText);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setPosts(data);
+      })
+      .catch((error) => {
+        setFetchError(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [selectedUserId]);
 
   return (
     <>
       <section className="users">
-        <h2>Users</h2>
-
         {users === null && <p>No users found...</p>}
-
-        {fetchError && <p>Error {fetchError.message}</p>}
-
-        {isLoading && (
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        )}
 
         {users?.map((user) => {
           return (
-            <section key={post.id}>
-              <h3>{post.title}</h3>
-              <p>{post.body}</p>
+            <section
+              className="user"
+              key={user.id}
+              onClick={() => selectUserId(user.id)}
+              style={{ borderColor: selectedUserId != user.id ? "white" : "green" }}
+            >
+              <h3>{user.name}</h3>
+              <p>{user.website}</p>
             </section>
           );
         })}
@@ -101,12 +102,7 @@ function App() {
         <h2>Posts</h2>
 
         {posts === null && <p>No posts found...</p>}
-
-        {fetchError && <p>Error {fetchError.message}</p>}
-
-        {isLoading && (
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        )}
+        {selectedUserId === null && <p>Please, select user!</p>}
 
         {posts?.slice(0, 5).map((post) => {
           return (
@@ -117,6 +113,12 @@ function App() {
           );
         })}
       </main>
+
+      {fetchError && <section className="error">{fetchError.message}</section>}
+
+      {isLoading && (
+        <img src={reactLogo} className="logo spinner" alt="spinner" />
+      )}
     </>
   );
 }
