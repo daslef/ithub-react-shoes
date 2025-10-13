@@ -1,73 +1,33 @@
-# React + TypeScript + Vite
+# Практическая работа №3
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Установка и запуск
 
-Currently, two official plugins are available:
+Клонируйте репозиторий
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+`git clone https://github.com/daslef/ithub-react-shoes.git`
 
-## React Compiler
+Перейдите в директорию и установите зависимости
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+`npm i`
 
-## Expanding the ESLint configuration
+Запустите в соседних вкладках бэкенд...
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+`npm run server`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+...и фронтенд
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+`npm run dev`
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Задание
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Выведите список пользователей, получив его с бэкенда `localhost:3000/users`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Отобразите его в виде кликабельных карточек, содержащих `name`, `email`, `phone`, `website`.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+При клике на карточку пользователя справа нужно отобразить последние 5 постов, написанных им, либо сообщение "У пользователя пока нет постов". Для получения постов используйте адрес `localhost:3000/posts`.
+
+## Критерии оценивания
+
+- выводится список пользователей с необходимыми полями (2 бала);
+- при клике запрашиваются и выводятся посты пользователя (2 балла);
+- присутствует базовое оформление (1 балл).

@@ -6,9 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "json-server src/data.json",
-    "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
   },
   "dependencies": {
     "json-server": "^1.0.0-beta.3",
