@@ -11,27 +11,31 @@ type Post = {
   body: string;
 };
 
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  website: string;
+}
+
+type UsersState = User[] | null;
 type PostsState = Post[] | null;
+
 type FetchErrorState = Error | null;
 
 function App() {
-  function handleLimitInput(event: ChangeEvent<HTMLInputElement>) {
-    const value = Number(event.target.value)
-    
-    if (Number.isFinite(value)) {
-      setLimit(value);
-    }
-  }
-
   const [posts, setPosts] = useState<PostsState>(null);
+  const [users, setUsers] = useState<UsersState>(null);
+  const [selectedUserId, selectUserId] = useState<number | null>(null)
+
   const [isLoading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<FetchErrorState>(null);
-  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     setLoading(true);
 
-    fetch(baseUrl + "/posts")
+    fetch(baseUrl + "/users")
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error with status" + response.statusText);
@@ -39,7 +43,7 @@ function App() {
         return response.json();
       })
       .then((data) => {
-        setPosts(data);
+        setUsers(data);
       })
       .catch((error) => {
         setFetchError(error);
@@ -49,34 +53,70 @@ function App() {
       });
   }, []);
 
+  // useEffect(() => {
+  //   setLoading(true);
+
+  //   fetch(baseUrl + "/posts")
+  //     .then((response) => {
+  //       if (!response.ok) {
+  //         throw new Error("Error with status" + response.statusText);
+  //       }
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       setPosts(data);
+  //     })
+  //     .catch((error) => {
+  //       setFetchError(error);
+  //     })
+  //     .finally(() => {
+  //       setLoading(false);
+  //     });
+  // }, []);
+
   return (
     <>
-      <h1>Posts</h1>
+      <section className="users">
+        <h2>Users</h2>
 
-      <input
-        type="text"
-        name="limit"
-        id="limit"
-        placeholder="Limit of posts"
-        onChange={handleLimitInput}
-      />
+        {users === null && <p>No users found...</p>}
 
-      {posts === null && <p>No posts found...</p>}
+        {fetchError && <p>Error {fetchError.message}</p>}
 
-      {fetchError && <p>Error {fetchError.message}</p>}
+        {isLoading && (
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        )}
 
-      {isLoading && (
-        <img src={reactLogo} className="logo react" alt="React logo" />
-      )}
+        {users?.map((user) => {
+          return (
+            <section key={post.id}>
+              <h3>{post.title}</h3>
+              <p>{post.body}</p>
+            </section>
+          );
+        })}
+      </section>
 
-      {posts?.slice(0, limit).map((post) => {
-        return (
-          <section key={post.id}>
-            <h3>{post.title}</h3>
-            <p>{post.body}</p>
-          </section>
-        );
-      })}
+      <main className="posts">
+        <h2>Posts</h2>
+
+        {posts === null && <p>No posts found...</p>}
+
+        {fetchError && <p>Error {fetchError.message}</p>}
+
+        {isLoading && (
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        )}
+
+        {posts?.slice(0, 5).map((post) => {
+          return (
+            <section key={post.id}>
+              <h3>{post.title}</h3>
+              <p>{post.body}</p>
+            </section>
+          );
+        })}
+      </main>
     </>
   );
 }

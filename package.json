@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "json-server src/data.json",
-    "lint": "eslint .",
+    "lint": "eslint ."
   },
   "dependencies": {
     "json-server": "^1.0.0-beta.3",
