@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { MantineProvider } from '@mantine/core';
+import { createTheme, MantineProvider, Paper, Text, Title } from '@mantine/core';
 
 import '@mantine/core/styles.css';
 import '@mantine/carousel/styles.css';
 import '@mantine/notifications/styles.css';
 
-``import "./App.css";
+import "./App.css";
 
 import reactLogo from "./assets/react.svg";
 
@@ -30,6 +30,16 @@ type UsersState = User[] | null;
 type PostsState = Post[] | null;
 
 type FetchErrorState = Error | null;
+
+const theme = createTheme({
+  components: {
+    Paper: Paper.extend({
+      styles: {
+        root: { backgroundColor: '#fcf' }
+      }
+    })
+  }
+})
 
 function App() {
   const [posts, setPosts] = useState<PostsState>(null);
@@ -86,7 +96,7 @@ function App() {
   }, [selectedUserId]);
 
   return (
-    <MantineProvider>
+    <MantineProvider theme={theme}>
       <section className="users">
         {users === null && <p>No users found...</p>}
 
@@ -113,10 +123,10 @@ function App() {
 
         {posts?.slice(0, 5).map((post) => {
           return (
-            <section key={post.id}>
-              <h3>{post.title}</h3>
-              <p>{post.body}</p>
-            </section>
+            <Paper key={post.id} withBorder shadow="sm" p="md">
+              <Title order={3}>{post.title}</Title>
+              <Text>{post.body}</Text>
+            </Paper>
           );
         })}
       </main>
