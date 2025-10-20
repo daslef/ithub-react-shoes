@@ -1,6 +1,13 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect } from "react";
+import { MantineProvider } from '@mantine/core';
+
+import '@mantine/core/styles.css';
+import '@mantine/carousel/styles.css';
+import '@mantine/notifications/styles.css';
+
+``import "./App.css";
+
 import reactLogo from "./assets/react.svg";
-import "./App.css";
 
 const baseUrl = "http://localhost:3000";
 
@@ -79,7 +86,7 @@ function App() {
   }, [selectedUserId]);
 
   return (
-    <>
+    <MantineProvider>
       <section className="users">
         {users === null && <p>No users found...</p>}
 
@@ -119,7 +126,7 @@ function App() {
       {isLoading && (
         <img src={reactLogo} className="logo spinner" alt="spinner" />
       )}
-    </>
+    </MantineProvider>
   );
 }
 
