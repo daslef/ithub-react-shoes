@@ -1,13 +1,28 @@
 import { useState, useEffect } from "react";
-import { createTheme, MantineProvider, Paper, Text, Title } from '@mantine/core';
+import {
+  createTheme,
+  MantineProvider,
+  Paper,
+  Text,
+  Title,
+  Card,
+  Group,
+  Badge,
+  Container,
+  Flex,
+  Button,
+  Image,
+  SimpleGrid,
+} from "@mantine/core";
 
-import '@mantine/core/styles.css';
-import '@mantine/carousel/styles.css';
-import '@mantine/notifications/styles.css';
+import "@mantine/core/styles.css";
+import "@mantine/carousel/styles.css";
+import "@mantine/notifications/styles.css";
 
 import "./App.css";
 
 import reactLogo from "./assets/react.svg";
+import defaultImage from "./assets/default-shoes.png";
 
 const baseUrl = "http://localhost:3000";
 
@@ -18,63 +33,31 @@ type Post = {
   body: string;
 };
 
-type User = {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  website: string;
-}
-
-type UsersState = User[] | null;
 type PostsState = Post[] | null;
 
 type FetchErrorState = Error | null;
 
 const theme = createTheme({
+  fontFamily: "Montserrat",
+  shadows: {
+    md: "0 2px 4px 0 rgba(0, 0, 0, 0.1)",
+  },
   components: {
     Paper: Paper.extend({
       styles: {
-        root: { backgroundColor: '#fcf' }
-      }
-    })
-  }
-})
+        root: { backgroundColor: "#fff", boxShadow: "var(--paper-shadow)" },
+      },
+    }),
+  },
+});
 
 function App() {
   const [posts, setPosts] = useState<PostsState>(null);
-  const [users, setUsers] = useState<UsersState>(null);
-  const [selectedUserId, selectUserId] = useState<number | null>(null)
 
   const [isLoading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<FetchErrorState>(null);
 
   useEffect(() => {
-    setLoading(true);
-
-    fetch(baseUrl + "/users")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error with status" + response.statusText);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setUsers(data);
-      })
-      .catch((error) => {
-        setFetchError(error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (selectedUserId === null) {
-      return
-    }
-
     setLoading(true);
 
     fetch(baseUrl + "/posts")
@@ -93,49 +76,52 @@ function App() {
       .finally(() => {
         setLoading(false);
       });
-  }, [selectedUserId]);
+  }, []);
 
   return (
     <MantineProvider theme={theme}>
-      <section className="users">
-        {users === null && <p>No users found...</p>}
+      <Container size="xl">
+        <Flex justify="center">
+          <Container className="posts" fluid>
+            <h2>Markerplace Products</h2>
 
-        {users?.map((user) => {
-          return (
-            <section
-              className="user"
-              key={user.id}
-              onClick={() => selectUserId(user.id)}
-              style={{ borderColor: selectedUserId != user.id ? "white" : "green" }}
-            >
-              <h3>{user.name}</h3>
-              <p>{user.website}</p>
-            </section>
-          );
-        })}
-      </section>
+            {posts === null && <p>No posts found...</p>}
 
-      <main className="posts">
-        <h2>Posts</h2>
+            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+              {posts?.slice(0, 5).map((post) => {
+                return (
+                  <Card shadow="sm" padding="lg" radius="md" withBorder>
+                    <Card.Section>
+                      <Image src={defaultImage} alt="Shoes image" />
+                    </Card.Section>
 
-        {posts === null && <p>No posts found...</p>}
-        {selectedUserId === null && <p>Please, select user!</p>}
+                    <Group justify="space-between" mt="md" mb="xs">
+                      <Text fw={500}>{post.title}</Text>
+                      <Badge color="pink">{post.id}</Badge>
+                    </Group>
 
-        {posts?.slice(0, 5).map((post) => {
-          return (
-            <Paper key={post.id} withBorder shadow="sm" p="md">
-              <Title order={3}>{post.title}</Title>
-              <Text>{post.body}</Text>
-            </Paper>
-          );
-        })}
-      </main>
+                    <Text size="sm" c="dimmed">
+                      {post.body}
+                    </Text>
 
-      {fetchError && <section className="error">{fetchError.message}</section>}
+                    <Button color="blue" fullWidth mt="md" radius="md">
+                      Order Now!
+                    </Button>
+                  </Card>
+                );
+              })}
+            </SimpleGrid>
+          </Container>
 
-      {isLoading && (
-        <img src={reactLogo} className="logo spinner" alt="spinner" />
-      )}
+          {fetchError && (
+            <section className="error">{fetchError.message}</section>
+          )}
+
+          {isLoading && (
+            <img src={reactLogo} className="logo spinner" alt="spinner" />
+          )}
+        </Flex>
+      </Container>
     </MantineProvider>
   );
 }

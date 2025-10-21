@@ -8,14 +8,14 @@
 }
 
 .users {
-  flex: 1;
+  flex: 3;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
 .posts {
-  flex: 3;
+  flex: 7;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
