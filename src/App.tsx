@@ -13,9 +13,16 @@ import {
   Button,
   Image,
   SimpleGrid,
+  AppShell,
+  Burger,
+  NavLink,
+  Skeleton
 } from "@mantine/core";
 
+import { useDisclosure } from "@mantine/hooks";
+
 import { categoriesApi } from "./api/categories";
+import type { Category } from "./types";
 
 import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
@@ -25,8 +32,6 @@ import "./App.css";
 
 import reactLogo from "./assets/react.svg";
 import defaultImage from "./assets/default-shoes.png";
-
-const baseUrl = "http://localhost:3000";
 
 type Post = {
   userId: number;
@@ -54,8 +59,10 @@ const theme = createTheme({
 });
 
 function App() {
+  const [opened, { toggle }] = useDisclosure();
+
   const [posts, setPosts] = useState<PostsState>(null);
-  const [categories, setCategories] = useState(null)
+  const [categories, setCategories] = useState<Category[] | null>(null)
 
   const [isLoading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<FetchErrorState>(null);
@@ -78,48 +85,74 @@ function App() {
 
   return (
     <MantineProvider theme={theme}>
-      <Container size="xl">
-        <Flex justify="center">
-          <Container className="posts" fluid>
-            <h2>Markerplace Products</h2>
+      <AppShell
+        padding="md"
+        header={{ height: 60 }}
+        navbar={{
+          width: 300,
+          breakpoint: 'sm',
+          collapsed: { mobile: !opened },
+        }}
+      >
+        <AppShell.Header>
+          <Burger
+            opened={opened}
+            onClick={toggle}
+            hiddenFrom="sm"
+            size="sm"
+          />
 
-            {posts === null && <p>No posts found...</p>}
+          <div>Logo</div>
+        </AppShell.Header>
 
-            <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-              {posts?.slice(0, 5).map((post) => {
-                return (
-                  <Card shadow="sm" padding="lg" radius="md" withBorder>
-                    <Card.Section>
-                      <Image src={defaultImage} alt="Shoes image" />
-                    </Card.Section>
+        <AppShell.Navbar>
+          {categories === null && [1,2,3,4,5].map(index => <Skeleton height={35} mb={6} key={`category_skeleton_${index}`} />)}
+          {categories?.map(category => <NavLink label={category.category_name} key={`category_${category.id}`} href="/" />)}
+        </AppShell.Navbar>
 
-                    <Group justify="space-between" mt="md" mb="xs">
-                      <Text fw={500}>{post.title}</Text>
-                      <Badge color="pink">{post.id}</Badge>
-                    </Group>
+        <AppShell.Main>
+          <Flex justify="center">
+            <Container className="posts" fluid>
+              <h2>Markerplace Products</h2>
 
-                    <Text size="sm" c="dimmed">
-                      {post.body}
-                    </Text>
+              {posts === null && <p>No posts found...</p>}
 
-                    <Button color="blue" fullWidth mt="md" radius="md">
-                      Order Now!
-                    </Button>
-                  </Card>
-                );
-              })}
-            </SimpleGrid>
-          </Container>
+              <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+                {posts?.slice(0, 5).map((post) => {
+                  return (
+                    <Card shadow="sm" padding="lg" radius="md" withBorder>
+                      <Card.Section>
+                        <Image src={defaultImage} alt="Shoes image" />
+                      </Card.Section>
 
-          {fetchError && (
-            <section className="error">{fetchError.message}</section>
-          )}
+                      <Group justify="space-between" mt="md" mb="xs">
+                        <Text fw={500}>{post.title}</Text>
+                        <Badge color="pink">{post.id}</Badge>
+                      </Group>
 
-          {isLoading && (
-            <img src={reactLogo} className="logo spinner" alt="spinner" />
-          )}
-        </Flex>
-      </Container>
+                      <Text size="sm" c="dimmed">
+                        {post.body}
+                      </Text>
+
+                      <Button color="blue" fullWidth mt="md" radius="md">
+                        Order Now!
+                      </Button>
+                    </Card>
+                  );
+                })}
+              </SimpleGrid>
+            </Container>
+
+            {fetchError && (
+              <section className="error">{fetchError.message}</section>
+            )}
+
+            {isLoading && (
+              <img src={reactLogo} className="logo spinner" alt="spinner" />
+            )}
+          </Flex>
+        </AppShell.Main>
+      </AppShell>
     </MantineProvider>
   );
 }
