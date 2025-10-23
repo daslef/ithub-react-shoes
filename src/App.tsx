@@ -15,6 +15,8 @@ import {
   SimpleGrid,
 } from "@mantine/core";
 
+import { categoriesApi } from "./api/categories";
+
 import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
 import "@mantine/notifications/styles.css";
@@ -53,6 +55,7 @@ const theme = createTheme({
 
 function App() {
   const [posts, setPosts] = useState<PostsState>(null);
+  const [categories, setCategories] = useState(null)
 
   const [isLoading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<FetchErrorState>(null);
@@ -60,15 +63,10 @@ function App() {
   useEffect(() => {
     setLoading(true);
 
-    fetch(baseUrl + "/posts")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Error with status" + response.statusText);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setPosts(data);
+    categoriesApi
+      .getAll()
+      .then(data => {
+        setCategories(data)
       })
       .catch((error) => {
         setFetchError(error);
