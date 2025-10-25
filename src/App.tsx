@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  createTheme,
   MantineProvider,
-  Paper,
   Text,
   Title,
   Card,
@@ -21,8 +19,11 @@ import {
 
 import { useDisclosure } from "@mantine/hooks";
 
+import { theme } from "./theme";
+
 import { categoriesApi } from "./api/categories";
-import type { Category } from "./types";
+import { productsApi } from "./api/products";
+import type { Category, Product } from "./types";
 
 import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
@@ -33,54 +34,34 @@ import "./App.css";
 import reactLogo from "./assets/react.svg";
 import defaultImage from "./assets/default-shoes.png";
 
-type Post = {
-  userId: number;
-  id: number;
-  title: string;
-  body: string;
-};
-
-type PostsState = Post[] | null;
-
-type FetchErrorState = Error | null;
-
-const theme = createTheme({
-  fontFamily: "Montserrat",
-  shadows: {
-    md: "0 2px 4px 0 rgba(0, 0, 0, 0.1)",
-  },
-  components: {
-    Paper: Paper.extend({
-      styles: {
-        root: { backgroundColor: "#fff", boxShadow: "var(--paper-shadow)" },
-      },
-    }),
-  },
-});
 
 function App() {
   const [opened, { toggle }] = useDisclosure();
 
-  const [posts, setPosts] = useState<PostsState>(null);
+  const [products, setProducts] = useState<Product[] | null>(null);
   const [categories, setCategories] = useState<Category[] | null>(null)
 
   const [isLoading, setLoading] = useState(false);
-  const [fetchError, setFetchError] = useState<FetchErrorState>(null);
+  const [fetchError, setFetchError] = useState<Error | null>(null);
 
   useEffect(() => {
     setLoading(true);
 
-    categoriesApi
-      .getAll()
-      .then(data => {
-        setCategories(data)
-      })
-      .catch((error) => {
-        setFetchError(error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    Promise.allSettled([
+      categoriesApi.getAll(),
+      productsApi.getAll()
+    ]).then(([categoriesResponse, productsResponse]) => {
+      if (categoriesResponse.status === "fulfilled") {
+        setCategories(categoriesResponse.value)
+      }
+      if (productsResponse.status === "fulfilled") {
+        setProducts(productsResponse.value)
+      }
+    }).catch(error => {
+      setFetchError(error)
+    }).finally(() => {
+      setLoading(false);
+    });
   }, []);
 
   return (
@@ -106,7 +87,7 @@ function App() {
         </AppShell.Header>
 
         <AppShell.Navbar>
-          {categories === null && [1,2,3,4,5].map(index => <Skeleton height={35} mb={6} key={`category_skeleton_${index}`} />)}
+          {categories === null && [1, 2, 3, 4, 5].map(index => <Skeleton height={35} mb={6} key={`category_skeleton_${index}`} />)}
           {categories?.map(category => <NavLink label={category.category_name} key={`category_${category.id}`} href="/" />)}
         </AppShell.Navbar>
 
