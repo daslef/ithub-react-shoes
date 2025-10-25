@@ -96,10 +96,10 @@ function App() {
             <Container className="posts" fluid>
               <h2>Markerplace Products</h2>
 
-              {posts === null && <p>No posts found...</p>}
+              {products === null && <p>No products found...</p>}
 
               <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-                {posts?.slice(0, 5).map((post) => {
+                {products?.map((product) => {
                   return (
                     <Card shadow="sm" padding="lg" radius="md" withBorder>
                       <Card.Section>
@@ -107,13 +107,18 @@ function App() {
                       </Card.Section>
 
                       <Group justify="space-between" mt="md" mb="xs">
-                        <Text fw={500}>{post.title}</Text>
-                        <Badge color="pink">{post.id}</Badge>
+                        <Text fw={500}>{product.name}</Text>
+                        <Badge color="pink">{product.category_id}</Badge>
                       </Group>
 
-                      <Text size="sm" c="dimmed">
-                        {post.body}
-                      </Text>
+                      <Group mt="auto" mb="xs" align="baseline">
+                        <Text size="xs" c="dimmed">
+                          {product.raw_price}
+                        </Text>
+                        <Text size="lg" c="violet" fw={600}>
+                          {product.current_price}
+                        </Text>
+                      </Group>
 
                       <Button color="blue" fullWidth mt="md" radius="md">
                         Order Now!
