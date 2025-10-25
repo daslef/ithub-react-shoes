@@ -65,8 +65,8 @@
         39,
         40
       ],
-      "categoryId": 1,
-      "brandId": 7
+      "category_id": 1,
+      "brand_id": 7
     },
     {
       "id": 2,
@@ -80,8 +80,8 @@
       "sizes": [
         41
       ],
-      "categoryId": 5,
-      "brandId": 6
+      "category_id": 5,
+      "brand_id": 6
     },
     {
       "id": 3,
@@ -96,8 +96,8 @@
         41,
         42
       ],
-      "categoryId": 5,
-      "brandId": 6
+      "category_id": 5,
+      "brand_id": 6
     },
     {
       "id": 4,
@@ -111,8 +111,8 @@
       "sizes": [
         36
       ],
-      "categoryId": 5,
-      "brandId": 2
+      "category_id": 5,
+      "brand_id": 2
     },
     {
       "id": 5,
@@ -127,8 +127,8 @@
         39,
         40
       ],
-      "categoryId": 5,
-      "brandId": 2
+      "category_id": 5,
+      "brand_id": 2
     },
     {
       "id": 7,
@@ -144,8 +144,8 @@
         39,
         40
       ],
-      "categoryId": 5,
-      "brandId": 6
+      "category_id": 5,
+      "brand_id": 6
     },
     {
       "id": 8,
@@ -161,8 +161,8 @@
         39,
         40
       ],
-      "categoryId": 1,
-      "brandId": 7
+      "category_id": 1,
+      "brand_id": 7
     },
     {
       "id": 9,
@@ -176,8 +176,8 @@
       "sizes": [
         40
       ],
-      "categoryId": 1,
-      "brandId": 7
+      "category_id": 1,
+      "brand_id": 7
     },
     {
       "id": 10,
@@ -193,8 +193,8 @@
         37,
         38
       ],
-      "categoryId": 1,
-      "brandId": 7
+      "category_id": 1,
+      "brand_id": 7
     },
     {
       "id": 15,
@@ -212,8 +212,8 @@
         39,
         40
       ],
-      "categoryId": 5,
-      "brandId": 2
+      "category_id": 5,
+      "brand_id": 2
     }
   ],
   "photos": [
