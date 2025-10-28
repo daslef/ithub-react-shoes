@@ -14,7 +14,7 @@ import {
   AppShell,
   Burger,
   NavLink,
-  Skeleton
+  Skeleton,
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
@@ -24,6 +24,7 @@ import { theme } from "./theme";
 import { categoriesApi } from "./api/categories";
 import { productsApi } from "./api/products";
 import type { Category, Product } from "./types";
+import useQuery from "./hooks/useQuery";
 
 import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
@@ -34,35 +35,27 @@ import "./App.css";
 import reactLogo from "./assets/react.svg";
 import defaultImage from "./assets/default-shoes.png";
 
-
 function App() {
   const [opened, { toggle }] = useDisclosure();
 
-  const [products, setProducts] = useState<Product[] | null>(null);
-  const [categories, setCategories] = useState<Category[] | null>(null)
+  const {
+    isLoading: isLoadingCategories,
+    data: categories,
+    error: errorCategories,
+  } = useQuery<Category[]>({
+    queryFunction: categoriesApi.getAll,
+  });
 
-  const [isLoading, setLoading] = useState(false);
-  const [fetchError, setFetchError] = useState<Error | null>(null);
+  const {
+    isLoading: isLoadingProducts,
+    data: products,
+    error: errorProducts,
+  } = useQuery<Product[]>({
+    queryFunction: productsApi.getAll,
+  });
 
-  useEffect(() => {
-    setLoading(true);
-
-    Promise.allSettled([
-      categoriesApi.getAll(),
-      productsApi.getAll()
-    ]).then(([categoriesResponse, productsResponse]) => {
-      if (categoriesResponse.status === "fulfilled") {
-        setCategories(categoriesResponse.value)
-      }
-      if (productsResponse.status === "fulfilled") {
-        setProducts(productsResponse.value)
-      }
-    }).catch(error => {
-      setFetchError(error)
-    }).finally(() => {
-      setLoading(false);
-    });
-  }, []);
+  const isLoading = isLoadingCategories || isLoadingProducts;
+  const error = errorCategories || errorProducts;
 
   return (
     <MantineProvider theme={theme}>
@@ -71,24 +64,28 @@ function App() {
         header={{ height: 60 }}
         navbar={{
           width: 300,
-          breakpoint: 'sm',
+          breakpoint: "sm",
           collapsed: { mobile: !opened },
         }}
       >
         <AppShell.Header>
-          <Burger
-            opened={opened}
-            onClick={toggle}
-            hiddenFrom="sm"
-            size="sm"
-          />
+          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
 
           <div>Logo</div>
         </AppShell.Header>
 
         <AppShell.Navbar>
-          {categories === null && [1, 2, 3, 4, 5].map(index => <Skeleton height={35} mb={6} key={`category_skeleton_${index}`} />)}
-          {categories?.map(category => <NavLink label={category.category_name} key={`category_${category.id}`} href="/" />)}
+          {categories === null &&
+            [1, 2, 3, 4, 5].map((index) => (
+              <Skeleton height={35} mb={6} key={`category_skeleton_${index}`} />
+            ))}
+          {categories?.map((category) => (
+            <NavLink
+              label={category.category_name}
+              key={`category_${category.id}`}
+              href="/"
+            />
+          ))}
         </AppShell.Navbar>
 
         <AppShell.Main>
@@ -129,9 +126,7 @@ function App() {
               </SimpleGrid>
             </Container>
 
-            {fetchError && (
-              <section className="error">{fetchError.message}</section>
-            )}
+            {error && <section className="error">{error.message}</section>}
 
             {isLoading && (
               <img src={reactLogo} className="logo spinner" alt="spinner" />
