@@ -1,3 +1,28 @@
+import {
+  Text,
+  Card,
+  Group,
+  Badge,
+  Container,
+  Flex,
+  Button,
+  Image,
+  SimpleGrid,
+} from "@mantine/core";
+
+import { productsApi } from "../api/products";
+import type { Product } from "../types";
+import useQuery from "../hooks/useQuery";
+
+import "@mantine/core/styles.css";
+import "@mantine/carousel/styles.css";
+import "@mantine/notifications/styles.css";
+
+import "../App.css";
+
+import reactLogo from "../assets/react.svg";
+import defaultImage from "../assets/default-shoes.png";
+
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
@@ -5,9 +30,60 @@ export const Route = createFileRoute('/')({
 })
 
 function Index() {
+  const {
+    isLoading: isLoadingProducts,
+    data: products,
+    error: errorProducts,
+  } = useQuery<Product[]>({
+    queryFunction: productsApi.getAll,
+  });
+
+  const isLoading = isLoadingProducts;
+  const error = errorProducts;
+
   return (
-    <div className="p-2">
-      <h3>Welcome Home!</h3>
-    </div>
-  )
+    <Flex justify="center">
+      <Container className="posts" fluid>
+        <h2>Markerplace Products</h2>
+
+        {products === null && <p>No products found...</p>}
+
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
+          {products?.map((product) => {
+            return (
+              <Card shadow="sm" padding="lg" radius="md" withBorder>
+                <Card.Section>
+                  <Image src={defaultImage} alt="Shoes image" />
+                </Card.Section>
+
+                <Group justify="space-between" mt="md" mb="xs">
+                  <Text fw={500}>{product.name}</Text>
+                  <Badge color="pink">{product.category_id}</Badge>
+                </Group>
+
+                <Group mt="auto" mb="xs" align="baseline">
+                  <Text size="xs" c="dimmed">
+                    {product.raw_price}
+                  </Text>
+                  <Text size="lg" c="violet" fw={600}>
+                    {product.current_price}
+                  </Text>
+                </Group>
+
+                <Button color="blue" fullWidth mt="md" radius="md">
+                  Order Now!
+                </Button>
+              </Card>
+            );
+          })}
+        </SimpleGrid>
+      </Container>
+
+      {error && <section className="error">{error.message}</section>}
+
+      {isLoading && (
+        <img src={reactLogo} className="logo spinner" alt="spinner" />
+      )}
+    </Flex>
+  );
 }
