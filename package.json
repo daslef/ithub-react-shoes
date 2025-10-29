@@ -13,6 +13,8 @@
     "@mantine/core": "^8.3.5",
     "@mantine/hooks": "^8.3.5",
     "@mantine/notifications": "^8.3.5",
+    "@tanstack/react-router": "^1.133.36",
+    "@tanstack/react-router-devtools": "^1.133.36",
     "embla-carousel": "^8.5.2",
     "embla-carousel-react": "^8.5.2",
     "json-server": "^1.0.0-beta.3",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@tanstack/router-plugin": "^1.133.36",
     "@types/node": "^24.6.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
