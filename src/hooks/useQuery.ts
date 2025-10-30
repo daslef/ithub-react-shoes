@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 
 type UseQuery<T> = {
-    queryFunction: () => Promise<T>
+    queryFunction: () => Promise<T>,
+    dependencies: string[]
 }
 
 export default function useQuery<T>({
-    queryFunction
+    queryFunction,
+    dependencies = []
 } : UseQuery<T>) {
     const [data, setData] = useState<T | null>(null)
     const [isLoading, setLoading] = useState(false)
@@ -24,7 +26,7 @@ export default function useQuery<T>({
             .finally(() => {
                 setLoading(false)
             })
-    }, [])
+    }, dependencies)
 
     return { data, isLoading, error }
 }

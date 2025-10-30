@@ -5,7 +5,6 @@ import {
     MantineProvider,
     AppShell,
     Burger,
-    NavLink,
     Skeleton,
 } from "@mantine/core";
 
@@ -15,6 +14,7 @@ import useQuery from "../hooks/useQuery";
 import { categoriesApi } from "../api/categories";
 import type { Category } from "../types";
 import { theme } from "../theme";
+import NavLink from '../components/nav-link';
 
 
 const RootLayout = () => {
@@ -52,18 +52,10 @@ const RootLayout = () => {
                                 <Skeleton height={35} mb={6} key={`category_skeleton_${index}`} />
                             ))}
                         {categories?.map((category) => (
-                            <NavLink
-                                label={category.category_name}
-                                key={`category_${category.id}`}
-                                href="/"
-                            />
+                            <NavLink to={'/category/' + category.id}>
+                                {category.category_name}
+                            </NavLink>
                         ))}
-                        <Link to="/" className="[&.active]:font-bold">
-                            Home
-                        </Link>{' '}
-                        <Link to="/about" className="[&.active]:font-bold">
-                            About
-                        </Link>
                     </AppShell.Navbar>
 
                     <AppShell.Main>
@@ -71,7 +63,7 @@ const RootLayout = () => {
                     </AppShell.Main>
                 </AppShell>
             </MantineProvider>
-            
+
             <TanStackRouterDevtools />
         </>
     )

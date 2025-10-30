@@ -1,4 +1,4 @@
-import { createTheme, Paper } from "@mantine/core";
+import { createTheme, Paper, Anchor } from "@mantine/core";
 
 export const theme = createTheme({
   fontFamily: "Montserrat",
@@ -11,5 +11,15 @@ export const theme = createTheme({
         root: { backgroundColor: "#fff", boxShadow: "var(--paper-shadow)" },
       },
     }),
+    Anchor: Anchor.extend({
+      defaultProps: {
+        underline: "never",
+      },
+      styles: {
+        root: {
+          padding: 12
+        }
+      }
+    })
   },
 });
