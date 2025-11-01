@@ -10,7 +10,7 @@ import {
   SimpleGrid,
 } from "@mantine/core";
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { productsApi } from "../api/products";
 import type { Product } from "../types";
@@ -31,6 +31,7 @@ export const Route = createFileRoute('/category/$categoryId')({
 
 function RouteComponent() {
   const { categoryId } = Route.useParams()
+  const navigate = useNavigate({ from: Route.fullPath })
 
   const {
     isLoading: isLoadingProducts,
@@ -73,7 +74,11 @@ function RouteComponent() {
                   </Text>
                 </Group>
 
-                <Button color="blue" fullWidth mt="md" radius="md">
+                <Button color="blue" fullWidth mt="md" radius="md" onClick={
+                  () => {
+                    navigate({ to: "/order", search: () => ({ productId: product.id })  })
+                  }
+                }>
                   Order Now!
                 </Button>
               </Card>

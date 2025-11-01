@@ -23,7 +23,7 @@ import "../App.css";
 import reactLogo from "../assets/react.svg";
 import defaultImage from "../assets/default-shoes.png";
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -36,8 +36,10 @@ function Index() {
     error: errorProducts,
   } = useQuery<Product[]>({
     queryFunction: productsApi.getAll,
+    dependencies: []
   });
 
+  const navigate = useNavigate({ from: Route.fullPath })
   const isLoading = isLoadingProducts;
   const error = errorProducts;
 
@@ -70,7 +72,11 @@ function Index() {
                   </Text>
                 </Group>
 
-                <Button color="blue" fullWidth mt="md" radius="md">
+                <Button color="blue" fullWidth mt="md" radius="md" onClick={
+                  () => {
+                    navigate({ to: "/order", search: () => ({ productId: product.id })  })
+                  }
+                }>
                   Order Now!
                 </Button>
               </Card>
