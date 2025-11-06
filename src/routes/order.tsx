@@ -43,7 +43,6 @@ function RouteComponent() {
   }
 
   const nameValidation = { required: true, minLength: 2, pattern: /^[А-Я][а-я]+/ }
-  // const validateDoubleA = (name: string) => name.match(/а{2,}/gi) !== null ? true : false
 
   return (
     <>
