@@ -1,6 +1,6 @@
 import { baseUrl } from "./config";
 
-type Resource = "categories" | "products" | "brands"
+type Resource = "categories" | "products" | "brands" | "orders"
 
 type Filter = {
     field: string,

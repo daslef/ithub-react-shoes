@@ -21,3 +21,10 @@ export type Product = {
     category_id: number,
     brand_id: number
 }
+
+export type Order = {
+    id: number,
+    firstName: string,
+    lastName: string,
+    delivery: "pickup" | "courier"
+}

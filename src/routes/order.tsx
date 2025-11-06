@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useForm, type SubmitHandler } from 'react-hook-form'
-import { TextInput, SegmentedControl } from '@mantine/core'
+import { useForm, type SubmitHandler, Controller } from 'react-hook-form'
+import { TextInput, SegmentedControl, Checkbox, Button } from '@mantine/core'
 
 
 type ProductOrderSchema = {
@@ -26,9 +26,9 @@ type FormInputs = {
 function RouteComponent() {
   const { productId } = Route.useSearch()
   const {
-    register,
     handleSubmit,
-    formState
+    formState,
+    control
   } = useForm<FormInputs>({
     defaultValues: {
       firstName: "",
@@ -49,31 +49,58 @@ function RouteComponent() {
       <div>Order for Product {productId}</div>
 
       <form style={{ display: "flex", flexDirection: "column", gap: 10 }} onSubmit={handleSubmit(onSubmit)}>
-        <TextInput label="Имя" placeholder="Иван" />
-        
-        {/* <input placeholder='Имя' {...register("firstName", nameValidation)} />
-        {formState.errors.firstName && <span>Поле неверно заполнено</span>} */}
+        <Controller
+          name="firstName"
+          control={control}
+          rules={{ ...nameValidation }}
+          render={({ field, fieldState }) => {
+            if (fieldState.invalid) {
+              return <TextInput label="Имя" placeholder="Иван" error="Поле заполнено некорректно" {...field} />
+            }
 
-        <TextInput label="Фамилия" placeholder="Иванов" />
+            return <TextInput label="Имя" placeholder="Иван" {...field} />
+          }}
+        />
 
-        {/* <input placeholder='Фамилия' {...register("lastName", nameValidation)} />
-        {formState.errors.lastName && <span>Поле неверно заполнено</span>} */}
+        <Controller
+          name="lastName"
+          control={control}
+          rules={{ ...nameValidation }}
+          render={({ field, fieldState }) => {
+            if (fieldState.invalid) {
+              return <TextInput label="Фамилия" placeholder="Иванов" error="Поле заполнено некорректно" {...field} />
+            }
 
-        <label htmlFor="delivery">Тип доставки</label>
-        <SegmentedControl data={[
-          { label: "Курьер", value: "courier"},
-          { label: "Самовывоз", value: "pickup"}
-        ]} />
-        
-        {/* <select id="delivery" {...register("delivery", { required: true })}>
-          <option value="courier">Курьер</option>
-          <option value="pickup">Самовывоз</option>
-        </select> */}
+            return <TextInput label="Фамилия" placeholder="Иванов" {...field} />
+          }}
+        />
 
-        <input type="checkbox" id="acceptRules" {...register("acceptRules", { required: true })} />
-        <label htmlFor="acceptRules">Согласен с <a>правилами доставки</a></label>
+        <Controller
+          name="delivery"
+          control={control}
+          render={({ field }) => {
+            return (
+              <>
+                <label htmlFor="delivery">Тип доставки</label>
+                <SegmentedControl {...field} data={[
+                  { label: "Курьер", value: "courier" },
+                  { label: "Самовывоз", value: "pickup" }
+                ]} />
+              </>
+            )
+          }}
+        />
 
-        <button type="submit" disabled={!formState.isValid}>Оформить</button>
+        <Controller 
+          name="acceptRules"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => {
+            return <Checkbox label="Согласен с правилами доставки" {...field} value={String(field.value)} />
+          }}
+        />
+
+        <Button disabled={!formState.isValid} onClick={handleSubmit(onSubmit)}>Оформить</Button>
       </form>
     </>
   )
