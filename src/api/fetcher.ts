@@ -10,7 +10,7 @@ type Filter = {
 type Filters = Filter[]
 
 
-export default function fetcher<R>(resource: Resource, filters: Filters = []) {
+export default function fetcher<R>(resource: Resource, filters: Filters = [], options: RequestInit = {}) {
     return new Promise<R>((resolve, reject) => {
         const url = new URL(baseUrl + '/' + resource)
 
@@ -18,7 +18,7 @@ export default function fetcher<R>(resource: Resource, filters: Filters = []) {
             url.searchParams.append(filter.field, String(filter.value))
         }
 
-        return fetch(url.toString())
+        return fetch(url.toString(), options)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("Error with status" + response.statusText);

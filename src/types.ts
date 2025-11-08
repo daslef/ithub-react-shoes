@@ -26,5 +26,9 @@ export type Order = {
     id: number,
     firstName: string,
     lastName: string,
-    delivery: "pickup" | "courier"
+    delivery: "pickup" | "courier",
+    productId: number,
+    createdAt: number
 }
+
+export type CreateOrder = Omit<Order, 'id' | 'createdAt'>

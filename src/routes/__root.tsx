@@ -26,6 +26,7 @@ const RootLayout = () => {
         error: errorCategories,
     } = useQuery<Category[]>({
         queryFunction: categoriesApi.getAll,
+        dependencies: []
     });
 
     return (
@@ -52,7 +53,7 @@ const RootLayout = () => {
                                 <Skeleton height={35} mb={6} key={`category_skeleton_${index}`} />
                             ))}
                         {categories?.map((category) => (
-                            <NavLink to={'/category/' + category.id}>
+                            <NavLink key={`link__${category.id}`} to={'/category/' + category.id}>
                                 {category.category_name}
                             </NavLink>
                         ))}

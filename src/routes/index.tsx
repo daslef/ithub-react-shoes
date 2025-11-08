@@ -53,7 +53,7 @@ function Index() {
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
           {products?.map((product) => {
             return (
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
+              <Card key={`product_${product.id}`} shadow="sm" padding="lg" radius="md" withBorder>
                 <Card.Section>
                   <Image src={defaultImage} alt="Shoes image" />
                 </Card.Section>

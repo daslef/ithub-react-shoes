@@ -1,7 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { useEffect } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form'
 import { TextInput, SegmentedControl, Checkbox, Button } from '@mantine/core'
 
+import useMutation from '../hooks/useMutation'
+import { ordersApi } from '../api/orders'
+import type { CreateOrder, Order } from '../types'
 
 type ProductOrderSchema = {
   productId: number
@@ -16,15 +20,14 @@ export const Route = createFileRoute('/order')({
   }
 })
 
-type FormInputs = {
-  firstName: string,
-  lastName: string,
-  delivery: "courier" | "pickup",
+type FormInputs = CreateOrder & {
   acceptRules: boolean
 }
 
 function RouteComponent() {
   const { productId } = Route.useSearch()
+  const navigate = useNavigate({ from: Route.fullPath })
+
   const {
     handleSubmit,
     formState,
@@ -34,12 +37,28 @@ function RouteComponent() {
       firstName: "",
       lastName: "",
       delivery: "courier",
-      acceptRules: false
+      acceptRules: false,
+      productId
     }
   })
 
+  const mutation = useMutation({
+    queryFunction: ordersApi.create
+  })
+
+  useEffect(() => {
+    if (!mutation?.result) {
+      return
+    }
+
+    navigate({ to: "/" })
+  }, [mutation.result])
+
   const onSubmit: SubmitHandler<FormInputs> = (data) => {
-    console.log(data)
+    const { acceptRules, ...payload } = data
+
+    console.log(payload)
+    mutation.mutate(payload)
   }
 
   const nameValidation = { required: true, minLength: 2, pattern: /^[А-Я][а-я]+/ }
@@ -100,7 +119,7 @@ function RouteComponent() {
           }}
         />
 
-        <Button disabled={!formState.isValid} onClick={handleSubmit(onSubmit)}>Оформить</Button>
+        <Button disabled={!formState.isValid || mutation.isLoading} onClick={handleSubmit(onSubmit)}>Оформить</Button>
       </form>
     </>
   )
