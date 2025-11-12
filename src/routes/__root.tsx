@@ -44,7 +44,10 @@ const RootLayout = () => {
                     <AppShell.Header>
                         <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
 
-                        <div>Logo</div>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between"}}>
+                            Logo
+                            <NavLink to="/create-product">Добавить продукт</NavLink>
+                        </div>
                     </AppShell.Header>
 
                     <AppShell.Navbar>

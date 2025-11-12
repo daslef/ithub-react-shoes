@@ -22,6 +22,19 @@ export type Product = {
     brand_id: number
 }
 
+export type CreateProduct = {
+    name: string,
+    current_price: number,
+    raw_price: number,
+    discount: number,
+    likes_count: 0,
+    is_new: true,
+    orders_count: 0,
+    sizes: number[],
+    category_id: number,
+    brand_id: number
+}
+
 export type Order = {
     id: number,
     firstName: string,

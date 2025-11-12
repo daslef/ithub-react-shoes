@@ -237,6 +237,23 @@
       ],
       "category_id": 5,
       "brand_id": 2
+    },
+    {
+      "id": "50f9",
+      "name": "tweq t",
+      "category_id": 1,
+      "brand_id": 1,
+      "raw_price": 10.2,
+      "discount": 15,
+      "likes_count": 0,
+      "is_new": true,
+      "orders_count": 0,
+      "sizes": [
+        35,
+        36,
+        37
+      ],
+      "current_price": 8.67
     }
   ],
   "photos": [

@@ -1,4 +1,4 @@
-import type { Product } from "../types";
+import type { CreateProduct, Product } from "../types";
 import fetcher from "./fetcher";
 
 type Filter = {
@@ -14,5 +14,11 @@ function getAll(filters: Filters = []) {
 }
 
 export const productsApi = {
-    getAll
+    getAll,
+    create: (payload: CreateProduct) =>
+        fetcher<Product>("products", [], {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
 }
