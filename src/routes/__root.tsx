@@ -10,6 +10,10 @@ import {
 
 import { useDisclosure } from "@mantine/hooks";
 
+import "@mantine/core/styles.css";
+import "@mantine/carousel/styles.css";
+import "@mantine/notifications/styles.css";
+
 import useQuery from "../hooks/useQuery";
 import { categoriesApi } from "../api/categories";
 import type { Category } from "../types";

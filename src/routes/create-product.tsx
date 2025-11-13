@@ -1,17 +1,25 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form'
-import { TextInput, SegmentedControl, NumberInput, Button } from '@mantine/core'
+import { TextInput, Select, NumberInput, Button, Text, Group, Title } from '@mantine/core'
 
+import useQuery from '../hooks/useQuery'
 import useMutation from '../hooks/useMutation'
+
+import { categoriesApi } from '../api/categories'
 import { productsApi } from '../api/products'
+import { brandsApi } from '../api/brands'
+
 import type { CreateProduct } from '../types'
 
 export const Route = createFileRoute('/create-product')({
   component: RouteComponent,
 })
 
-type FormInputs = Omit<CreateProduct, 'likes_count' | 'is_new' | 'orders_count' | 'sizes' | 'current_price'>
+type FormInputs = Pick<CreateProduct, 'name' | 'raw_price' | 'discount'> & {
+  category_id: string,
+  brand_id: string
+}
 
 function RouteComponent() {
   const navigate = useNavigate({ from: Route.fullPath })
@@ -22,14 +30,23 @@ function RouteComponent() {
     control
   } = useForm<FormInputs>({
     defaultValues: {
-      name: "",
-      category_id: 1,
-      brand_id: 1,
-    }
+      name: ""
+    },
+    mode: "onTouched"
   })
 
   const mutation = useMutation({
     queryFunction: productsApi.create
+  })
+
+  const { data: brandsData, isLoading: isBrandsLoading } = useQuery({
+    queryFunction: brandsApi.getAll,
+    dependencies: []
+  })
+
+  const { data: categoriesData, isLoading: isCategoriesLoading } = useQuery({
+    queryFunction: categoriesApi.getAll,
+    dependencies: []
   })
 
   useEffect(() => {
@@ -47,7 +64,9 @@ function RouteComponent() {
       is_new: true,
       orders_count: 0,
       sizes: [35, 36, 37],
-      current_price: data.raw_price * (1 - data.discount / 100)
+      current_price: data.raw_price * (1 - data.discount / 100),
+      brand_id: Number(data.brand_id),
+      category_id: Number(data.category_id)
     } satisfies CreateProduct;
 
     console.log(payload)
@@ -60,9 +79,9 @@ function RouteComponent() {
 
   return (
     <>
-      <div>Create new Product</div>
+      <Title order={2}>Create new Product</Title>
 
-      <form style={{ display: "flex", flexDirection: "column", gap: 10 }} onSubmit={handleSubmit(onSubmit)}>
+      <form style={{ display: "flex", flexDirection: "column", gap: 10, width: "min(720px, 100%)" }} onSubmit={handleSubmit(onSubmit)}>
         <Controller
           name="name"
           control={control}
@@ -76,29 +95,82 @@ function RouteComponent() {
           }}
         />
 
-        <Controller
-          name="raw_price"
-          control={control}
-          rules={priceValidation}
-          render={({ field, fieldState }) => {
-            if (fieldState.invalid) {
-              return <NumberInput description="Before discount" decimalScale={2} allowNegative={false} label="Raw Price" placeholder="1000.00" error="Incorrect format" {...field} />
-            }
+        <Group>
+          <Controller
+            name="raw_price"
+            control={control}
+            rules={priceValidation}
+            render={({ field, fieldState }) => {
+              if (fieldState.invalid) {
+                return <NumberInput style={{ flex: 1 }} description="Before discount" decimalScale={2} allowNegative={false} label="Raw Price" placeholder="1000.00" error="Incorrect format" {...field} />
+              }
 
-            return <NumberInput description="Before discount" decimalScale={2} allowNegative={false} label="Raw Price" placeholder="1000.00" {...field} />
+              return <NumberInput style={{ flex: 1 }} description="Before discount" decimalScale={2} allowNegative={false} label="Raw Price" placeholder="1000.00" {...field} />
+            }}
+          />
+
+          <Controller
+            name="discount"
+            control={control}
+            rules={discountValidation}
+            render={({ field, fieldState }) => {
+              if (fieldState.invalid) {
+                return <NumberInput suffix="%" min={0} max={99} description="In percents" allowDecimal={false} label="Discount" placeholder="15" error="Incorrect format" {...field} />
+              }
+
+              return <NumberInput suffix="%" min={0} max={99} description="In percents" allowDecimal={false} label="Discount" placeholder="15" {...field} />
+            }}
+          />
+        </Group>
+        <Controller
+          name="brand_id"
+          control={control}
+          rules={{ required: true }}
+          render={({ field, fieldState }) => {
+            return (
+              <>
+                <Select
+                  label="Brand"
+                  placeholder="Pick value"
+                  data={brandsData?.map(brand => ({
+                    value: String(brand.id),
+                    label: brand.brand_name
+                  })) || []}
+                  comboboxProps={{
+                    transitionProps: { transition: 'pop', duration: 100 }
+                  }}
+                  searchable
+                  {...field}
+                />
+                {fieldState.invalid && <Text size="xs" c="red">Brand must be selected!</Text>}
+              </>
+            )
           }}
         />
 
         <Controller
-          name="discount"
+          name="category_id"
           control={control}
-          rules={discountValidation}
+          rules={{ required: true }}
           render={({ field, fieldState }) => {
-            if (fieldState.invalid) {
-              return <NumberInput suffix="%" min={0} max={99} description="In percents" allowDecimal={false} label="Discount" placeholder="15" error="Incorrect format" {...field} />
-            }
-
-            return <NumberInput suffix="%" min={0} max={99} description="In percents"  allowDecimal={false} label="Discount" placeholder="15" {...field} />
+            return (
+              <>
+                <Select
+                  label="Category"
+                  placeholder="Pick value"
+                  data={categoriesData?.map(category => ({
+                    value: String(category.id),
+                    label: category.category_name
+                  })) || []}
+                  comboboxProps={{
+                    transitionProps: { transition: 'pop', duration: 100 }
+                  }}
+                  searchable
+                  {...field}
+                />
+                {fieldState.invalid && <Text size="xs" c="red">Category must be selected!</Text>}
+              </>
+            )
           }}
         />
 
