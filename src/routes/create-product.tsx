@@ -1,6 +1,10 @@
 import { useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useForm, type SubmitHandler, Controller } from 'react-hook-form'
+
+import * as v from 'valibot'
+import { valibotResolver } from '@hookform/resolvers/valibot'
+
 import { TextInput, Select, NumberInput, Button, Text, Group, Title } from '@mantine/core'
 
 import useQuery from '../hooks/useQuery'
@@ -16,10 +20,16 @@ export const Route = createFileRoute('/create-product')({
   component: RouteComponent,
 })
 
-type FormInputs = Pick<CreateProduct, 'name' | 'raw_price' | 'discount'> & {
-  category_id: string,
-  brand_id: string
-}
+const formSchema = v.object({
+  name: v.pipe(v.string(), v.nonEmpty("Name is required")),
+  raw_price: v.pipe(v.number("Price must be set"), v.minValue(0.01, "Price must be at least 1 cent")),
+  discount: v.fallback(
+    v.pipe(v.number("Discount must be set"), v.minValue(0), v.maxValue(99)),
+    0
+  ),
+  category_id: v.pipe(v.string("Category must be set"), v.transform(Number), v.finite(), v.integer(), v.minValue(1)),
+  brand_id: v.pipe(v.string("Brand must be set"), v.transform(Number), v.finite(), v.integer(), v.minValue(1))
+})
 
 function RouteComponent() {
   const navigate = useNavigate({ from: Route.fullPath })
@@ -28,10 +38,11 @@ function RouteComponent() {
     handleSubmit,
     formState,
     control
-  } = useForm<FormInputs>({
+  } = useForm({
     defaultValues: {
       name: ""
     },
+    resolver: valibotResolver(formSchema),
     mode: "onTouched"
   })
 
@@ -57,7 +68,7 @@ function RouteComponent() {
     navigate({ to: "/" })
   }, [mutation.result])
 
-  const onSubmit: SubmitHandler<FormInputs> = (data) => {
+  const onSubmit: SubmitHandler<v.InferOutput<typeof formSchema>> = (data) => {
     const payload = {
       ...data,
       likes_count: 0,
@@ -65,17 +76,13 @@ function RouteComponent() {
       orders_count: 0,
       sizes: [35, 36, 37],
       current_price: data.raw_price * (1 - data.discount / 100),
-      brand_id: Number(data.brand_id),
-      category_id: Number(data.category_id)
+      brand_id: data.brand_id,
+      category_id: data.category_id
     } satisfies CreateProduct;
 
     console.log(payload)
     mutation.mutate(payload)
   }
-
-  const nameValidation = { required: true, pattern: /^[a-z]+ [a-z]+.*$/i }
-  const priceValidation = { required: true, pattern: /^\d+(\.\d\d)?$/ }
-  const discountValidation = { required: true, pattern: /^\d{1,2}$/ }
 
   return (
     <>
@@ -85,10 +92,9 @@ function RouteComponent() {
         <Controller
           name="name"
           control={control}
-          rules={{ ...nameValidation }}
           render={({ field, fieldState }) => {
             if (fieldState.invalid) {
-              return <TextInput label="Title" placeholder="Nike AirMax" error="Incorrect format" {...field} />
+              return <TextInput label="Title" placeholder="Nike AirMax" error={formState.errors.name?.message} {...field} />
             }
 
             return <TextInput label="Title" placeholder="Nike AirMax" {...field} />
@@ -99,10 +105,9 @@ function RouteComponent() {
           <Controller
             name="raw_price"
             control={control}
-            rules={priceValidation}
             render={({ field, fieldState }) => {
               if (fieldState.invalid) {
-                return <NumberInput style={{ flex: 1 }} description="Before discount" decimalScale={2} allowNegative={false} label="Raw Price" placeholder="1000.00" error="Incorrect format" {...field} />
+                return <NumberInput style={{ flex: 1 }} description="Before discount" decimalScale={2} allowNegative={false} label="Raw Price" placeholder="1000.00" error={formState.errors.raw_price?.message} {...field} />
               }
 
               return <NumberInput style={{ flex: 1 }} description="Before discount" decimalScale={2} allowNegative={false} label="Raw Price" placeholder="1000.00" {...field} />
@@ -112,10 +117,9 @@ function RouteComponent() {
           <Controller
             name="discount"
             control={control}
-            rules={discountValidation}
             render={({ field, fieldState }) => {
               if (fieldState.invalid) {
-                return <NumberInput suffix="%" min={0} max={99} description="In percents" allowDecimal={false} label="Discount" placeholder="15" error="Incorrect format" {...field} />
+                return <NumberInput suffix="%" min={0} max={99} description="In percents" allowDecimal={false} label="Discount" placeholder="15" error={formState.errors.discount?.message} {...field} />
               }
 
               return <NumberInput suffix="%" min={0} max={99} description="In percents" allowDecimal={false} label="Discount" placeholder="15" {...field} />
@@ -125,7 +129,6 @@ function RouteComponent() {
         <Controller
           name="brand_id"
           control={control}
-          rules={{ required: true }}
           render={({ field, fieldState }) => {
             return (
               <>
@@ -142,7 +145,7 @@ function RouteComponent() {
                   searchable
                   {...field}
                 />
-                {fieldState.invalid && <Text size="xs" c="red">Brand must be selected!</Text>}
+                {fieldState.invalid && <Text size="xs" c="red">{formState.errors.brand_id?.message}</Text>}
               </>
             )
           }}
@@ -151,7 +154,6 @@ function RouteComponent() {
         <Controller
           name="category_id"
           control={control}
-          rules={{ required: true }}
           render={({ field, fieldState }) => {
             return (
               <>
@@ -168,7 +170,7 @@ function RouteComponent() {
                   searchable
                   {...field}
                 />
-                {fieldState.invalid && <Text size="xs" c="red">Category must be selected!</Text>}
+                {fieldState.invalid && <Text size="xs" c="red">{formState.errors.category_id?.message}</Text>}
               </>
             )
           }}
