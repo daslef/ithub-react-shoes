@@ -29,8 +29,11 @@ export const createProductSchema = v.omit(
         orders_count: v.fallback(v.literal(0), 0),
         is_new: v.fallback(v.literal(true), true)
     }),
-    ['id']    
+    ['id']
 )
 
-export type Product = v.InferOutput<typeof productSchema>
-export type CreateProduct = v.InferOutput<typeof createProductSchema>
+
+// добавить схемы: 
+// - orderSchema (на основе типа Order из файла types.ts)
+// - createOrderSchema (на основе типа CreateOrder из файла types.ts)  
+
