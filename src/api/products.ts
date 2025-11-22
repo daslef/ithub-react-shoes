@@ -10,6 +10,7 @@ type Filters = Filter[]
 
 
 function getAll(filters: Filters = []) {
+    console.log(filters)
     return fetcher<Product[]>("products", filters)
 }
 

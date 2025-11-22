@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type DependencyList } from "react";
 
 type UseQuery<T> = {
     queryFunction: () => Promise<T>,
-    dependencies: string[]
+    dependencies: DependencyList
 }
 
 export default function useQuery<T>({

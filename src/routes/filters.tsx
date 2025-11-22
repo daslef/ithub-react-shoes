@@ -27,8 +27,19 @@ import defaultImage from "../assets/default-shoes.png";
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
+type SearchFilters = {
+  current_price_gte: number | undefined,
+  current_price_lte: number | undefined
+}
+
 export const Route = createFileRoute('/filters')({
   component: Index,
+  validateSearch: (search: Record<string, unknown>): SearchFilters => {
+    return {
+      current_price_gte: search.current_price_gte ? Number(search.current_price_gte) : undefined,
+      current_price_lte: search.current_price_lte ? Number(search.current_price_lte) : undefined
+    }
+  }
 })
 
 const priceFormSchema = v.object({
@@ -38,19 +49,26 @@ const priceFormSchema = v.object({
 })
 
 function Index() {
+  const searchFilters = Route.useSearch()
+
   const {
     isLoading: isLoadingProducts,
     data: products,
     error: errorProducts,
   } = useQuery<Product[]>({
-    queryFunction: productsApi.getAll,
-    dependencies: []
+    queryFunction: () => productsApi.getAll(
+      Object.entries(searchFilters).reduce((filters, [field, value]) => {
+        if (value === undefined) {
+          return filters
+        }
+        return [...filters, { field, value }]
+      }, [])
+    ),
+    dependencies: [searchFilters.current_price_gte, searchFilters.current_price_lte]
   });
 
   const { handleSubmit, control, formState } = useForm({
     defaultValues: {
-      minPrice: 0,
-      maxPrice: 10000,
       discountOnly: false
     },
     resolver: valibotResolver(priceFormSchema)
