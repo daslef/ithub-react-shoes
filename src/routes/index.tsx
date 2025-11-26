@@ -1,27 +1,17 @@
-import {
-  Text,
-  Card,
-  Group,
-  Badge,
-  Container,
-  Flex,
-  Button,
-  Image,
-  SimpleGrid,
-} from "@mantine/core";
+import { Container, Flex, SimpleGrid } from "@mantine/core";
 
+import ProductCard from "../components/product/product";
 import { productsApi } from "../api/products";
 import type { Product } from "../types";
 import useQuery from "../hooks/useQuery";
 
 import reactLogo from "../assets/react.svg";
-import defaultImage from "../assets/default-shoes.png";
 
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: Index,
-})
+});
 
 function Index() {
   const {
@@ -30,10 +20,10 @@ function Index() {
     error: errorProducts,
   } = useQuery<Product[]>({
     queryFunction: productsApi.getAll,
-    dependencies: []
+    dependencies: [],
   });
 
-  const navigate = useNavigate({ from: Route.fullPath })
+  const navigate = useNavigate({ from: Route.fullPath });
   const isLoading = isLoadingProducts;
   const error = errorProducts;
 
@@ -45,37 +35,9 @@ function Index() {
         {products === null && <p>No products found...</p>}
 
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
-          {products?.map((product) => {
-            return (
-              <Card key={`product_${product.id}`} shadow="sm" padding="lg" radius="md" withBorder>
-                <Card.Section>
-                  <Image src={defaultImage} alt="Shoes image" />
-                </Card.Section>
-
-                <Group justify="space-between" mt="md" mb="xs">
-                  <Text fw={500}>{product.name}</Text>
-                  <Badge color="pink">{product.category_id}</Badge>
-                </Group>
-
-                <Group mt="auto" mb="xs" align="baseline">
-                  <Text size="xs" c="dimmed">
-                    {product.raw_price}
-                  </Text>
-                  <Text size="lg" c="violet" fw={600}>
-                    {product.current_price}
-                  </Text>
-                </Group>
-
-                <Button color="blue" fullWidth mt="md" radius="md" onClick={
-                  () => {
-                    navigate({ to: "/order", search: () => ({ productId: product.id })  })
-                  }
-                }>
-                  Order Now!
-                </Button>
-              </Card>
-            );
-          })}
+          {products?.map((product) => (
+            <ProductCard product={product} navigate={navigate} />
+          ))}
         </SimpleGrid>
       </Container>
 

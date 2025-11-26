@@ -1,14 +1,4 @@
-import {
-  Text,
-  Card,
-  Group,
-  Badge,
-  Container,
-  Flex,
-  Button,
-  Image,
-  SimpleGrid,
-} from "@mantine/core";
+import { Container, Flex, SimpleGrid } from "@mantine/core";
 
 import ProductCard from "../components/product/product";
 import { productsApi } from "../api/products";
@@ -18,7 +8,6 @@ import useQuery from "../hooks/useQuery";
 import PriceFilter from "../components/filters/price-filter/price-filter";
 
 import reactLogo from "../assets/react.svg";
-import defaultImage from "../assets/default-shoes.png";
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
