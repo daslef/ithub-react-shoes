@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
     Flex,
     Button,
@@ -11,17 +12,31 @@ import { useForm, Controller } from "react-hook-form";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import * as v from 'valibot'
 
+import { getLimits } from "./lib";
 import { priceFormSchema, type PriceFilterProps } from "./types";
 
 
 
-export default function PriceFilter({ navigate } : PriceFilterProps) {
-    const { handleSubmit, control, formState } = useForm({
+export default function PriceFilter({ navigate, products } : PriceFilterProps) {
+    const { handleSubmit, control, formState, setValue, watch } = useForm({
         defaultValues: {
-            discountOnly: false
+            discountOnly: false,
         },
         resolver: valibotResolver(priceFormSchema)
     })
+
+    const minPrice = watch("minPrice")
+    const maxPrice = watch("maxPrice")
+
+    useEffect(() => {
+        if (!products?.length) {
+            return
+        }
+
+        const limits = getLimits(products)
+        setValue("minPrice", limits.minPrice)
+        setValue("maxPrice", limits.maxPrice)
+    }, [products])
 
     const onPriceFilter = (payload: v.InferOutput<typeof priceFormSchema>) => {
         console.log(payload)
@@ -54,10 +69,7 @@ export default function PriceFilter({ navigate } : PriceFilterProps) {
             >
                 <Title order={4}>Filter by price</Title>
 
-                <RangeSlider defaultValue={[
-                    0,
-                    10000
-                ]} />
+                <RangeSlider value={[minPrice ?? 0, maxPrice ?? 10000]} />
 
                 <Flex gap={8}>
                     <Controller
