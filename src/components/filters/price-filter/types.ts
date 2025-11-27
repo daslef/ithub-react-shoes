@@ -4,7 +4,8 @@ import type { Product } from '../../../types'
 
 export type PriceFilterProps = {
     navigate: NavigateFn,
-    products: Product[]
+    products: Product[],
+    discountOnly: boolean
 }
 
 export const priceFormSchema = v.object({

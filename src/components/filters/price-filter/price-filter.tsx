@@ -17,13 +17,15 @@ import { priceFormSchema, type PriceFilterProps } from "./types";
 
 
 
-export default function PriceFilter({ navigate, products } : PriceFilterProps) {
+export default function PriceFilter({ navigate, products, discountOnly } : PriceFilterProps) {
     const { handleSubmit, control, formState, setValue, watch } = useForm({
+        resolver: valibotResolver(priceFormSchema),
         defaultValues: {
-            discountOnly: false,
-        },
-        resolver: valibotResolver(priceFormSchema)
+            discountOnly: discountOnly === undefined ? false : true
+        }
     })
+
+    console.log(discountOnly)
 
     const minPrice = watch("minPrice")
     const maxPrice = watch("maxPrice")
@@ -44,12 +46,7 @@ export default function PriceFilter({ navigate, products } : PriceFilterProps) {
         const searchParams = {
             "current_price_gte": payload.minPrice,
             "current_price_lte": payload.maxPrice,
-            "discount_ne": 0
-        }
-
-        if (!payload.discountOnly) {
-            // @ts-ignore
-            delete searchParams["discount_ne"]
+            "discount_gte": Number(payload.discountOnly)
         }
 
         navigate({
@@ -91,7 +88,7 @@ export default function PriceFilter({ navigate, products } : PriceFilterProps) {
                     name="discountOnly"
                     control={control}
                     render={({ field }) => {
-                        return <Switch label="Only with discount" {...field} value={String(field.value)} />
+                        return <Switch label="Only with discount" {...field} value={Number(field.value)} />
                     }}
                 />
                 <Button onClick={handleSubmit(onPriceFilter)}>Apply</Button>
