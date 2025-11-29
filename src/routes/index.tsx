@@ -19,9 +19,13 @@ type SearchFilters = {
   discount_gte: number | undefined;
 };
 
+type SearchSorter = {
+  _sort: '-discount' | 'current_price' | '-current_price' | 'name' | undefined
+}
+
 export const Route = createFileRoute("/")({
   component: Index,
-  validateSearch: (search: Record<string, unknown>): SearchFilters => {
+  validateSearch: (search: Record<string, unknown>): SearchFilters & SearchSorter => {
     return {
       current_price_gte: search.current_price_gte
         ? Number(search.current_price_gte)
@@ -32,15 +36,23 @@ export const Route = createFileRoute("/")({
       discount_gte: search.discount_gte
         ? Number(search.discount_gte)
         : undefined,
+      _sort: search._sort as SearchSorter["_sort"]
     };
   },
 });
 
 function Index() {
-  const searchFilters = Route.useSearch();
+  function updateSorter(newSorter: string | null) {
+    if (newSorter) {
+      setSorter(newSorter)
+      navigate({ search: { ...searchFilters, '_sort': newSorter as SearchSorter["_sort"] } })
+    }
+  }
+
+  const { _sort: searchSorter, ...searchFilters } = Route.useSearch();
   const [opened, { open, close }] = useDisclosure(false)
 
-  const [sorter, setSorter] = useState<string | null>("name")
+  const [sorter, setSorter] = useState<string | null>(searchSorter || "name")
 
   const {
     isLoading: isLoadingProducts,
@@ -77,9 +89,9 @@ function Index() {
         <Group mb={16}>
           <Button onClick={open}>Filters</Button>
           <Filters searchFilters={searchFilters} opened={opened} close={close} navigate={navigate} products={products ?? []} />
-          <Select data={['-discount', 'current_price', '-current_price', 'name']} value={sorter} onChange={setSorter} />
+          <Select data={['-discount', 'current_price', '-current_price', 'name']} value={sorter} allowDeselect={false} onChange={updateSorter} />
         </Group>
-        
+
         {products === null && <p>No products found...</p>}
 
         <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }}>
