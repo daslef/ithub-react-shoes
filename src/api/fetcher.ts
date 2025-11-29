@@ -10,12 +10,16 @@ type Filter = {
 type Filters = Filter[]
 
 
-export default function fetcher<R>(resource: Resource, filters: Filters = [], options: RequestInit = {}) {
+export default function fetcher<R>(resource: Resource, filters: Filters = [], sorter: string | null = null, options: RequestInit = {}) {
     return new Promise<R>((resolve, reject) => {
         const url = new URL(baseUrl + '/' + resource)
 
         for (const filter of filters) {
             url.searchParams.append(filter.field, String(filter.value))
+        }
+
+        if (sorter) {
+            url.searchParams.append('_sort', sorter)
         }
 
         return fetch(url.toString(), options)

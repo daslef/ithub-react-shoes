@@ -8,16 +8,17 @@ type Filter = {
 
 type Filters = Filter[]
 
+type Sorter = 'discount' | 'current_price' | '-current_price' | 'name'
 
-function getAll(filters: Filters = []) {
-    console.log(filters)
-    return fetcher<Product[]>("products", filters)
+function getAll(filters: Filters = [], sorter: Sorter = 'name') {
+    console.log({ filters, sorter })
+    return fetcher<Product[]>("products", filters, sorter)
 }
 
 export const productsApi = {
     getAll,
     create: (payload: CreateProduct) =>
-        fetcher<Product>("products", [], {
+        fetcher<Product>("products", [], null, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)

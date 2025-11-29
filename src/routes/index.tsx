@@ -1,4 +1,4 @@
-import { Container, Flex, SimpleGrid, Button } from "@mantine/core";
+import { Container, Flex, SimpleGrid, Button, Select, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
 import ProductCard from "../components/product/product";
@@ -11,6 +11,7 @@ import Filters from "../components/filters";
 import reactLogo from "../assets/react.svg";
 
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 
 type SearchFilters = {
   current_price_gte: number | undefined;
@@ -39,6 +40,8 @@ function Index() {
   const searchFilters = Route.useSearch();
   const [opened, { open, close }] = useDisclosure(false)
 
+  const [sorter, setSorter] = useState<string | null>("name")
+
   const {
     isLoading: isLoadingProducts,
     data: products,
@@ -51,12 +54,14 @@ function Index() {
             return filters;
           }
           return [...filters, { field, value }];
-        }, [])
+        }, []),
+        sorter
       ),
     dependencies: [
       searchFilters.current_price_gte,
       searchFilters.current_price_lte,
-      searchFilters.discount_gte
+      searchFilters.discount_gte,
+      sorter
     ],
   });
 
@@ -69,8 +74,11 @@ function Index() {
       <Container className="posts" fluid>
         <h2>Markerplace Products</h2>
 
-        <Button onClick={open}>Filters</Button>
-        <Filters searchFilters={searchFilters} opened={opened} close={close} navigate={navigate} products={products ?? []} />
+        <Group mb={16}>
+          <Button onClick={open}>Filters</Button>
+          <Filters searchFilters={searchFilters} opened={opened} close={close} navigate={navigate} products={products ?? []} />
+          <Select data={['-discount', 'current_price', '-current_price', 'name']} value={sorter} onChange={setSorter} />
+        </Group>
         
         {products === null && <p>No products found...</p>}
 
